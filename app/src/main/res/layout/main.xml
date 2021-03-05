@@ -44,29 +44,10 @@
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/roulette" />
 
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="43dp"
-        android:layout_height="23dp"
-        app:layout_constraintBottom_toTopOf="@+id/wheel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/triangle" />
-
-    <include
-        android:id="@+id/include"
-        layout="@layout/audio_contingut"
-        tools:layout_editor_absoluteX="6dp"
-        tools:layout_editor_absoluteY="0dp" />
-
     <TextView
         android:id="@+id/resultTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/imageView3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -78,22 +59,24 @@
         android:layout_height="39dp"
         android:onClick="logout"
         android:text="Cerrar sesión"
-        app:layout_constraintBottom_toTopOf="@+id/include"
-        app:layout_constraintEnd_toStartOf="@+id/include"
-        app:layout_constraintHorizontal_bias="0.206"
-        app:layout_constraintStart_toEndOf="@+id/include"
-        app:layout_constraintTop_toBottomOf="@+id/include"
-        app:layout_constraintVertical_bias="0.939" />
+        tools:layout_editor_absoluteX="306dp"
+        tools:layout_editor_absoluteY="8dp" />
 
     <TextView
         android:id="@+id/textViewUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Usuari"
-        app:layout_constraintBottom_toTopOf="@+id/include"
-        app:layout_constraintEnd_toStartOf="@+id/include"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.example.ruletalucasmedina.Flecha
+        android:id="@+id/flecha"
+        android:layout_width="54dp"
+        android:layout_height="38dp"
+        app:layout_constraintBottom_toTopOf="@+id/wheel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/include"
-        app:layout_constraintVertical_bias="0.974" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>

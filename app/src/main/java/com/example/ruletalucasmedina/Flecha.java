@@ -38,11 +38,11 @@ public class Flecha extends  View {
         super.onDraw(canvas);
         Paint paint = new Paint();
 
-        //paint.setColor(android.graphics.Color.RED);
+        paint.setColor(color);
         //canvas.drawPaint(paint);
 
         paint.setStrokeWidth(4);
-        paint.setColor(android.graphics.Color.RED);
+        paint.setColor(color);
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
         paint.setAntiAlias(true);
 

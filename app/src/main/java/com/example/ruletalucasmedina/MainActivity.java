@@ -1,6 +1,7 @@
 package com.example.ruletalucasmedina;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -74,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        Flecha flecha= findViewById(R.id.flecha);
+        flecha.setColor(Color.BLACK);
         wheel = (ImageView)findViewById(R.id.wheel);
         resultTv = (TextView)findViewById(R.id.resultTv);
         control = (Button)findViewById(R.id.control);
