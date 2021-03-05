@@ -1,6 +1,7 @@
 package com.example.ruletalucasmedina;
 
 import android.content.Intent;
+
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -14,9 +15,12 @@ import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,12 +28,20 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import java.util.Random;
 
@@ -41,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isReproduint;
     private Intent intent;
     private static final String[] sectors = { "32 ROJO", "15 NEGRO",
-            "19 ROJO", "4 black", "21 ROJO", "2 NEGRO", "25 ROJO", "17 NEGRO", "34 ROJO",
+            "19 ROJO", "4 NEGRO", "21 ROJO", "2 NEGRO", "25 ROJO", "17 NEGRO", "34 ROJO",
             "6 NEGRO", "27 ROJO","13 NEGRO", "36 ROJO", "11 NEGRO", "30 ROJO", "8 NEGRO",
             "23 ROJO", "10 NEGRO", "5 ROJO", "24 NEGRO", "16 ROJO", "33 NEGRO",
             "1 ROJO", "20 NEGRO", "14 ROJO", "31 NEGRO", "9 ROJO", "22 NEGRO",
@@ -57,8 +69,16 @@ public class MainActivity extends AppCompatActivity {
     public Button control;
     public TextView textViewUser;
 
+    private TextView textViewNumero;
+    public EditText editTextApuesta;
+
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
+    String []  bar;
+    public String numeroResultado;
+    public String colorResultado;
+    public String dineroApuesta;
+    public int dinero;
 
 
     @Override
@@ -77,11 +97,14 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Flecha flecha= findViewById(R.id.flecha);
         flecha.setColor(Color.BLACK);
+
         wheel = (ImageView)findViewById(R.id.wheel);
         resultTv = (TextView)findViewById(R.id.resultTv);
         control = (Button)findViewById(R.id.control);
         textViewUser = (TextView)findViewById(R.id.textViewUser);
 
+        textViewNumero = (TextView) findViewById(R.id.textViewNumero);
+        editTextApuesta = (EditText) findViewById(R.id.editTextApuesta);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -141,6 +164,11 @@ public class MainActivity extends AppCompatActivity {
             public void onAnimationEnd(Animation animation) {
                 // we display the correct sector pointed by the triangle at the end of the rotate animation
                 resultTv.setText(getSector(360 - (grados % 360)));
+                bar = getSector(360 - (grados % 360)).split(" ");
+                //textViewNumero.setText(bar[1]);
+                numeroResultado = bar[0];
+                colorResultado = bar[1];
+                calcularApuesta(numeroResultado, colorResultado);
             }
 
             @Override
@@ -195,8 +223,43 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void calcularApuesta(String numero, String color){
+        String hola = "";
+        //textViewNumero.setText(color);
+        dineroApuesta = editTextApuesta.getText().toString();
+        dinero = Integer.parseInt(dineroApuesta);
+        if(color.equals("ROJO")){
+            dinero = dinero * 3;
+        }
+        if(color.equals("NEGRO")){
+            dinero = dinero * 2;
+        }
+        hola = dinero+"";
+        String id = mAuth.getCurrentUser().getUid();
+        //String dineroPersona = mDatabase.child("Usuarios").child(id).child("Saldo").get().getResult().getValue().toString();
+
+        mDatabase.child("Usuarios").child(id).child("Saldo").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (!task.isSuccessful()) {
+                    Log.e("firebase", "Error getting data", task.getException());
+
+                }
+                else {
+                    String dineroPersona = String.valueOf(task.getResult().getValue());
+                    System.out.println(dineroPersona);
+                    if(dineroPersona=="null")dineroPersona="100";
+                    int dineroAcumulado = Integer.parseInt(dineroPersona);
+                    dinero = dineroAcumulado + dinero;
+                    mDatabase.child("Usuarios").child(id).child("Saldo").setValue(dinero);
+                    String dineroString = dinero+"";
+                    textViewNumero.setText(dineroString);
+                }
+            }
+        });
 
 
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
