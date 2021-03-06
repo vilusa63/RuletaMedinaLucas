@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="dam2.fje.edu.M01_AudioActivity"
+    >
+    <item
+        android:id="@+id/pause"
+        android:orderInCategory="100"
+        android:title="Pause" />
+    <item
+        android:id="@+id/logout"
+        android:orderInCategory="100"
+        android:title="Cerrar Sesion" />
+
+</menu>

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "371834984939",
+    "project_id": "ruleta-67262",
+    "storage_bucket": "ruleta-67262.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:371834984939:android:bc5d5669fcddee59fce1ae",
+        "android_client_info": {
+          "package_name": "com.example.ruletalucasmedina"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "371834984939-oiv36frmngtligdg158pjolt74vbig65.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApt0ps-7d245aV_AutPSSn_UCfClKztD8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "371834984939-oiv36frmngtligdg158pjolt74vbig65.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
