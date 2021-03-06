@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="colores">
+        <item>Negro</item>
+        <item>Rojo</item>
+    </string-array>
+    <string-array name="paridad">
+        <item>Par</item>
+        <item>Impar</item>
+    </string-array>
+    <string-array name="opciones">
+        <item>Color</item>
+        <item>Paridad</item>
+        <item>Numero</item>
+    </string-array>
+</resources>

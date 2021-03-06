@@ -7,17 +7,22 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
+import android.text.InputFilter;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,12 +63,12 @@ public class MainActivity extends AppCompatActivity {
             "23 ROJO", "10 NEGRO", "5 ROJO", "24 NEGRO", "16 ROJO", "33 NEGRO",
             "1 ROJO", "20 NEGRO", "14 ROJO", "31 NEGRO", "9 ROJO", "22 NEGRO",
             "18 ROJO", "29 NEGRO", "7 ROJO", "28 NEGRO", "12 ROJO", "35 NEGRO",
-            "3 ROJO", "26 NEGRO", "CERO"
+            "3 ROJO", "26 NEGRO", "0 Verde"
     };
     private static final Random RANDOM = new Random();
     private int grados = 0, gradosAnt = 0;
     private static final float HALF_SECTOR = 360f / 37f / 2f;
-
+    public int dineroApostado;
     public ImageView wheel;
     public TextView resultTv;
     public Button control;
@@ -78,9 +83,10 @@ public class MainActivity extends AppCompatActivity {
     public String numeroResultado;
     public String colorResultado;
     public String dineroApuesta;
-    public int dinero;
-
-
+    public int dinero=0;
+    EditText editText;
+    public String colorApuesta="Negro";
+    public String parApuesta="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,32 +103,111 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Flecha flecha= findViewById(R.id.flecha);
         flecha.setColor(Color.BLACK);
-
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.opciones, android.R.layout.simple_spinner_item);
+        setSpinner(spinner,adapter);
+        editText = findViewById(R.id.editTextNumber) ;
+        editText.setFilters( new InputFilter[]{ new MinMaxFilter( "0" , "36" )}) ;
         wheel = (ImageView)findViewById(R.id.wheel);
         resultTv = (TextView)findViewById(R.id.resultTv);
-        control = (Button)findViewById(R.id.control);
         textViewUser = (TextView)findViewById(R.id.textViewUser);
-
         textViewNumero = (TextView) findViewById(R.id.textViewNumero);
         editTextApuesta = (EditText) findViewById(R.id.editTextApuesta);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
         agafarInfoUser();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+    public void setSpinner(Spinner spinner, ArrayAdapter<CharSequence> adapter){
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        adapter.getItem(0);
+        if(adapter.getItem(0).toString().equals("Color")){
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Spinner spinner = (Spinner) findViewById(R.id.spinner2);
+
+                switch (position) {
+                    case 0:
+                        parApuesta="";
+                        editText.setVisibility(View.INVISIBLE);
+                        spinner.setVisibility(View.VISIBLE);
+                        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(MainActivity.this,
+                                R.array.colores, android.R.layout.simple_spinner_item);
+                        setSpinner(spinner,adapter);
+                        break;
+                    case 1:
+                        colorApuesta="";
+                        editText.setVisibility(View.INVISIBLE);
+                        spinner.setVisibility(View.VISIBLE);
+                        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(MainActivity.this,
+                                R.array.paridad, android.R.layout.simple_spinner_item);
+                        setSpinner(spinner,adapter2);
+                        break;
+                    case 2:
+                        spinner.setVisibility(View.INVISIBLE);
+                        editText.setVisibility(View.VISIBLE);
+                        colorApuesta="";
+                        parApuesta="";
+                        break;
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });}
+        else if(adapter.getItem(0).toString().equals("Negro")){
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    switch (position) {
+                        case 0:
+                            colorApuesta="Negro";
+                            break;
+                        case 1:
+                            colorApuesta="Rojo";
+                             break;
+                    }
+                }
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+        }else if(adapter.getItem(0).toString().equals("Par")) {
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    switch (position) {
+                        case 0:
+                            parApuesta = "Par";
+                            break;
+                        case 1:
+                            parApuesta = "Impar";
+                            break;
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+        }
 
     }
-
-    public void controlMusica(View v){
+    public void controlMusica(){
         if (isReproduint) {
             isReproduint = false;
-            control.setText("Play");
             intent.putExtra("operacio", "pausa");
             startService(intent);
-
-
         } else {
             isReproduint = true;
-            control.setText("Pause");
             intent.putExtra("operacio", "inici");
             startService(intent);
 
@@ -138,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
         startService(intent);
     }
 
-    public void logout(View v){
+    public void logout(){
         mAuth.signOut();
         startActivity(new Intent(getApplicationContext(),LoginActivity.class));
         finish();
@@ -227,17 +312,55 @@ public class MainActivity extends AppCompatActivity {
         String hola = "";
         //textViewNumero.setText(color);
         dineroApuesta = editTextApuesta.getText().toString();
-        dinero = Integer.parseInt(dineroApuesta);
-        if(color.equals("ROJO")){
-            dinero = dinero * 3;
-        }
-        if(color.equals("NEGRO")){
-            dinero = dinero * 2;
-        }
-        hola = dinero+"";
-        String id = mAuth.getCurrentUser().getUid();
-        //String dineroPersona = mDatabase.child("Usuarios").child(id).child("Saldo").get().getResult().getValue().toString();
 
+        if(dineroApuesta.matches("\\d+(?:\\.\\d+)?")) {
+            dineroApostado = Integer.parseInt(dineroApuesta);
+            System.out.println(dineroApostado);
+            System.out.println(dinero);
+            if (!colorApuesta.equalsIgnoreCase("")) {
+                if (color.equalsIgnoreCase(colorApuesta)) {
+                    dineroApostado = dineroApostado * 2;
+                }
+                else{
+                    dineroApostado = -dineroApostado;
+                }
+            } else if (!parApuesta.equals("")) {
+                if (Integer.parseInt(numero) % 2 == 0) {
+                    if (parApuesta.equalsIgnoreCase("par")) {
+                        dineroApostado= dineroApostado * 2;
+                    }
+                    else{
+                        dineroApostado= -dineroApostado;
+                    }
+                } else {
+                    if (parApuesta.equalsIgnoreCase("impar")) {
+                        dineroApostado = dineroApostado * 2;
+                    }
+                    else{
+                        dineroApostado= -dineroApostado;
+                    }
+                }
+            } else {
+                if (Integer.parseInt(numero) == Integer.parseInt(String.valueOf(editText.getText()))) {
+                    if(Integer.parseInt(numero)==0){
+                        dineroApostado = dineroApostado * 20;
+                    }else {
+                        dineroApostado = dineroApostado * 5;
+                    }
+                }
+                else{
+                    dineroApostado= -dineroApostado;
+                }
+            }
+            System.out.println(dinero);
+            getDinero();
+        }else{
+            editTextApuesta.setHint("Obligatorio");
+        }
+        //String dineroPersona = mDatabase.child("Usuarios").child(id).child("Saldo").get().getResult().getValue().toString();
+    }
+    public void getDinero(){
+        String id = mAuth.getCurrentUser().getUid();
         mDatabase.child("Usuarios").child(id).child("Saldo").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
@@ -250,28 +373,25 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println(dineroPersona);
                     if(dineroPersona=="null")dineroPersona="100";
                     int dineroAcumulado = Integer.parseInt(dineroPersona);
-                    dinero = dineroAcumulado + dinero;
+                    dinero = dineroAcumulado + dineroApostado;
                     mDatabase.child("Usuarios").child(id).child("Saldo").setValue(dinero);
                     String dineroString = dinero+"";
                     textViewNumero.setText(dineroString);
                 }
             }
         });
-
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.logout) {
+            logout();
+        }
+        if(id == R.id.pause){
+            if(item.getTitle().equals("Play"))item.setTitle("Pause");
+            if(item.getTitle().equals("Pause"))item.setTitle("Play");
+            controlMusica();
         }
         return super.onOptionsItemSelected(item);
     }
