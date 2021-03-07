@@ -1,6 +1,7 @@
 package com.example.ruletalucasmedina;
 
 import android.app.IntentService;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -9,12 +10,12 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
-public class Audio extends IntentService {
+public class Audio extends Service {
 
     private MediaPlayer mp;
 
     public Audio() {
-        super("serveiAudio");
+        super();
     }
 
     @Override
@@ -52,11 +53,7 @@ public class Audio extends IntentService {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return super.onBind(intent);
+        return null;
     }
 
-    @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
-
-    }
 }

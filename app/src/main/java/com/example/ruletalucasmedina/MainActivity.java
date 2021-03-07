@@ -7,6 +7,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.text.InputFilter;
 import android.util.Log;
 import android.view.Menu;
@@ -95,7 +97,23 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("operacio", "inici");
         isReproduint = true;
         startService(intent);
-
+        PhoneStateListener phoneStateListener = new PhoneStateListener() {
+            @Override
+            public void onCallStateChanged(int state, String incomingNumber) {
+                if (state == TelephonyManager.CALL_STATE_RINGING) {
+                    intent.putExtra("operacio", "pausa");
+                } else if(state == TelephonyManager.CALL_STATE_IDLE) {
+                    intent.putExtra("operacio", "inici");
+                } else if(state == TelephonyManager.CALL_STATE_OFFHOOK) {
+                    intent.putExtra("operacio", "pausa");
+                }
+                super.onCallStateChanged(state, incomingNumber);
+            }
+        };
+        TelephonyManager mgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        if(mgr != null) {
+            mgr.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+        }
 
         setContentView(R.layout.main);
 
@@ -210,11 +228,8 @@ public class MainActivity extends AppCompatActivity {
             isReproduint = true;
             intent.putExtra("operacio", "inici");
             startService(intent);
-
-
         }
     }
-
 
     protected void onPause() {
         super.onPause();
@@ -390,7 +405,7 @@ public class MainActivity extends AppCompatActivity {
         }
         if(id == R.id.pause){
             if(item.getTitle().equals("Play"))item.setTitle("Pause");
-            if(item.getTitle().equals("Pause"))item.setTitle("Play");
+            else if(item.getTitle().equals("Pause"))item.setTitle("Play");
             controlMusica();
         }
         return super.onOptionsItemSelected(item);
